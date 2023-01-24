@@ -6,26 +6,87 @@ package ants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 
 class AppShould {
 
-  private DimensionChecker dimensionChecker;
+    private DimensionChecker dimensionChecker;
 
-  @BeforeEach
-  void setUp() {
-    dimensionChecker = mock(DimensionChecker.class);
-  }
+    @BeforeEach
+    void setUp() {
+        dimensionChecker = mock(DimensionChecker.class);
+    }
 
-  @Test
-  void callDimensionChecker_when_build() {
-    int anyNumber = 33;
+    @Test
+    void callDimensionChecker_when_build() {
+        int anyNumber = 33;
 
-    new App(dimensionChecker, anyNumber);
+        new App(dimensionChecker, anyNumber);
 
-    verify(dimensionChecker).checkDimension(anyNumber);
-  }
+        verify(dimensionChecker).checkDimension(anyNumber);
+    }
+
+    @Test
+    void printOneDimensionGridState_when_print() {
+        int gridDimension = 1;
+        var app = new App(dimensionChecker, gridDimension);
+
+        String expectedResult = "B";
+
+        String result = captureConsoleString(app::print);
+
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void printTwoDimensionGridState_when_print() {
+        int gridDimension = 3;
+        var app = new App(dimensionChecker, gridDimension);
+
+        String expectedResult = """
+                BBB
+                BBB
+                BBB""";
+
+        String result = captureConsoleString(app::print);
+
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void createGrid_when_init(){
+        int gridDimension = 3;
+        var app = new App(dimensionChecker, gridDimension);
+        app.start();
+
+        String expectedResult = """
+                BBB
+                BHB
+                BBB""";
+
+        String result = captureConsoleString(app::print);
+
+        assertEquals(expectedResult, result);
+    }
+
+    private String captureConsoleString(Runnable runnable) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream((baos));
+
+        PrintStream old = System.out;
+        System.setOut(ps);
+
+        runnable.run();
+
+        System.setOut(old);
+
+        return baos.toString();
+    }
 
 }
