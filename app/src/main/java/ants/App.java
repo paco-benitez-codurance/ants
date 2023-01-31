@@ -3,10 +3,12 @@ package ants;
 public class App {
 
     private final int dimension;
+    private final Printer printer;
     private boolean isAntInGrid;
 
     App(DimensionChecker dimensionChecker, int dimension) {
         this.dimension = dimension;
+        this.printer = new Printer(dimension);
         dimensionChecker.checkDimension(this.dimension);
     }
 
@@ -15,18 +17,32 @@ public class App {
     }
 
     public void print() {
-        String line = "B".repeat(dimension);
-//TODO: Refactor this!!
         for (int i = 0; i < dimension - 1; i++) {
-            if (i == dimension / 2 && isAntInGrid) {
-                String antLine = line.substring(0, dimension / 2) + "H" + line.substring(dimension / 2 + 1);
-                System.out.println(antLine);
-            } else {
-                System.out.println(line);
-            }
+            printLine(i);
+            printer.printLn();
         }
-        System.out.print(line);
+        printLine(dimension);
     }
 
+    private void printLine( int lineNumber) {
+        boolean isAntLine = isAntLocatedInThisLine(lineNumber);
+
+        if (isAntLine) {
+            int antLinePosition = getAntLinePosition();
+            printer.printAntLine(antLinePosition);
+        } else {
+            printer.printBlankLine();
+        }
+    }
+
+    private boolean isAntLocatedInThisLine(int lineNumber) {
+        int antLineNumber = getAntLinePosition();
+
+        return lineNumber == antLineNumber && isAntInGrid;
+    }
+
+    private int getAntLinePosition() {
+        return dimension / 2;
+    }
 
 }
