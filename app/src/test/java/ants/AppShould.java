@@ -5,10 +5,6 @@ package ants;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.Extensions;
-import org.mockito.Mockito;
-import org.mockito.internal.matchers.Any;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -16,7 +12,6 @@ import java.io.PrintStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class AppShould {
 
     private DimensionChecker dimensionChecker;
@@ -88,6 +83,8 @@ class AppShould {
         App app = initApp(3);
         app.start();
 
+        when(grid.getColorAt(1,1)).thenReturn("B");
+
         app.move();
 
         verify(ant).moveRight();
@@ -97,7 +94,7 @@ class AppShould {
         App app = initApp(3);
         app.start();
 
-        when(grid.getColorAt()).thenReturn("N");
+        when(grid.getColorAt(1,1)).thenReturn("N");
 
         app.move();
 

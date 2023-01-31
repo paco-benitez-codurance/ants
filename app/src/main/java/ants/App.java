@@ -50,10 +50,16 @@ public class App {
     }
 
     public void move() {
-        if (grid.getColorAt().equals("N")) {
+        String color = grid.getColorAt(1,1);
+
+        if (color.equals("N")) {
             ant.moveLeft();
-        } else {
+        }
+
+        if(color.equals("B")){
             ant.moveRight();
         }
+
+
     }
 }
