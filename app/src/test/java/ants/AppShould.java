@@ -5,37 +5,43 @@ package ants;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.Extensions;
+import org.mockito.Mockito;
+import org.mockito.internal.matchers.Any;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-
+@ExtendWith(MockitoExtension.class)
 class AppShould {
 
     private DimensionChecker dimensionChecker;
+    private Ant ant;
+    private Grid grid;
 
     @BeforeEach
     void setUp() {
         dimensionChecker = mock(DimensionChecker.class);
+        ant = mock(Ant.class);
+        grid = mock(Grid.class);
     }
 
     @Test
     void callDimensionChecker_when_build() {
         int anyNumber = 33;
 
-        new App(dimensionChecker, anyNumber);
+        new App(dimensionChecker, anyNumber, ant, grid);
 
         verify(dimensionChecker).checkDimension(anyNumber);
     }
 
     @Test
     void printOneDimensionGridState_when_print() {
-        int gridDimension = 1;
-        var app = new App(dimensionChecker, gridDimension);
+        App app = initApp(1);
 
         String expectedResult = "B";
 
@@ -44,10 +50,14 @@ class AppShould {
         assertEquals(expectedResult, result);
     }
 
+    private App initApp(int gridDimension) {
+        var app = new App(dimensionChecker, gridDimension, ant, grid);
+        return app;
+    }
+
     @Test
     void printTwoDimensionGridState_when_print() {
-        int gridDimension = 3;
-        var app = new App(dimensionChecker, gridDimension);
+        App app = initApp(3);
 
         String expectedResult = """
                 BBB
@@ -61,8 +71,7 @@ class AppShould {
 
     @Test
     void createGrid_when_init(){
-        int gridDimension = 3;
-        var app = new App(dimensionChecker, gridDimension);
+        App app = initApp(3);
         app.start();
 
         String expectedResult = """
@@ -74,6 +83,27 @@ class AppShould {
 
         assertEquals(expectedResult, result);
     }
+    @Test
+    void ant_turn_right_when_blank_grid(){
+        App app = initApp(3);
+        app.start();
+
+        app.move();
+
+        verify(ant).moveRight();
+    }
+    @Test
+    void ant_turn_left_when_black_grid(){
+        App app = initApp(3);
+        app.start();
+
+        when(grid.getColorAt()).thenReturn("N");
+
+        app.move();
+
+        verify(ant).moveLeft();
+    }
+
 
     private String captureConsoleString(Runnable runnable) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

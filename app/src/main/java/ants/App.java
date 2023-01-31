@@ -4,11 +4,15 @@ public class App {
 
     private final int dimension;
     private final Printer printer;
+    private final Ant ant;
+    private final Grid grid;
     private boolean isAntInGrid;
 
-    App(DimensionChecker dimensionChecker, int dimension) {
+    App(DimensionChecker dimensionChecker, int dimension, Ant ant, Grid grid) {
+        this.ant = ant;
         this.dimension = dimension;
         this.printer = new Printer(dimension);
+        this.grid = grid;
         dimensionChecker.checkDimension(this.dimension);
     }
 
@@ -24,7 +28,7 @@ public class App {
         printLine(dimension);
     }
 
-    private void printLine( int lineNumber) {
+    private void printLine(int lineNumber) {
         boolean isAntLine = isAntLocatedInThisLine(lineNumber);
 
         if (isAntLine) {
@@ -45,4 +49,11 @@ public class App {
         return dimension / 2;
     }
 
+    public void move() {
+        if (grid.getColorAt().equals("N")) {
+            ant.moveLeft();
+        } else {
+            ant.moveRight();
+        }
+    }
 }
