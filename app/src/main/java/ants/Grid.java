@@ -18,4 +18,8 @@ public class Grid {
   public String getColorAt(int x, int y) {
         throw new UnsupportedOperationException();
     }
+
+  public void changeColorAt(Position antPosition) {
+    throw  new UnsupportedOperationException();
+  }
 }

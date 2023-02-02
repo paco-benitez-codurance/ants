@@ -88,5 +88,17 @@ class AppShould {
     verify(mockAntFunction).apply(middleGridPosition);
   }
 
+  @Test
+  void grid_should_change_color_when_ant_move(){
+    //TODO: make this test green
+    int gridDimension = 5;
+    App app = initApp(gridDimension);
+
+    Position antPosition = Position.of(gridDimension/ 2);
+
+    app.move();
+
+    verify(grid).changeColorAt(antPosition);
+  }
 
 }
