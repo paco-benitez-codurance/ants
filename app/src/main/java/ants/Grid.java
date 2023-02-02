@@ -2,7 +2,11 @@ package ants;
 
 public class Grid {
 
-    public String getColorAt(int x, int y) {
+  public Grid(int dimension) {
+
+  }
+
+  public String getColorAt(int x, int y) {
         throw new UnsupportedOperationException();
     }
 }

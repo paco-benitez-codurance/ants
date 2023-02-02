@@ -8,112 +8,134 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class AppShould {
 
-    private DimensionChecker dimensionChecker;
-    private Ant ant;
-    private Grid grid;
+  private DimensionChecker dimensionChecker;
+  private Ant ant;
+  private Function<Integer, Ant> antFunction;
 
-    @BeforeEach
-    void setUp() {
-        dimensionChecker = mock(DimensionChecker.class);
-        ant = mock(Ant.class);
-        grid = mock(Grid.class);
-    }
+  private Grid grid;
+  private Function<Integer, Grid> gridFunction;
 
-    @Test
-    void callDimensionChecker_when_build() {
-        int anyNumber = 33;
+  @BeforeEach
+  void setUp() {
+    dimensionChecker = mock(DimensionChecker.class);
+    ant = mock(Ant.class);
+    antFunction = (position) -> ant;
 
-        new App(dimensionChecker, anyNumber, ant, grid);
+    grid = mock(Grid.class);
+    gridFunction = (dimension) -> grid;
+  }
 
-        verify(dimensionChecker).checkDimension(anyNumber);
-    }
+  @Test
+  void callDimensionChecker_when_build() {
+    int anyNumber = 33;
 
-    @Test
-    void printOneDimensionGridState_when_print() {
-        App app = initApp(1);
+    new App(dimensionChecker, anyNumber, antFunction, gridFunction);
 
-        String expectedResult = "B";
+    verify(dimensionChecker).checkDimension(anyNumber);
+  }
 
-        String result = captureConsoleString(app::print);
+  @Test
+  void printOneDimensionGridState_when_print() {
+    App app = initApp(1);
 
-        assertEquals(expectedResult, result);
-    }
+    String expectedResult = "B";
 
-    private App initApp(int gridDimension) {
-        var app = new App(dimensionChecker, gridDimension, ant, grid);
-        return app;
-    }
+    String result = captureConsoleString(app::print);
 
-    @Test
-    void printTwoDimensionGridState_when_print() {
-        App app = initApp(3);
+    assertEquals(expectedResult, result);
+  }
 
-        String expectedResult = """
-                BBB
-                BBB
-                BBB""";
+  private App initApp(int gridDimension) {
+    var app = new App(dimensionChecker, gridDimension, antFunction, gridFunction);
+    return app;
+  }
 
-        String result = captureConsoleString(app::print);
+  @Test
+  void printTwoDimensionGridState_when_print() {
+    App app = initApp(3);
 
-        assertEquals(expectedResult, result);
-    }
+    String expectedResult = """
+      BBB
+      BBB
+      BBB""";
 
-    @Test
-    void createGrid_when_init(){
-        App app = initApp(3);
-        app.start();
+    String result = captureConsoleString(app::print);
 
-        String expectedResult = """
-                BBB
-                BHB
-                BBB""";
+    assertEquals(expectedResult, result);
+  }
 
-        String result = captureConsoleString(app::print);
+  @Test
+  void createGrid_when_init() {
+    App app =  new App(dimensionChecker, 3, Ant::new, gridFunction);
+    app.start();
 
-        assertEquals(expectedResult, result);
-    }
-    @Test
-    void ant_turn_right_when_blank_grid(){
-        App app = initApp(3);
-        app.start();
+    String expectedResult = """
+      BBB
+      BHB
+      BBB""";
 
-        when(grid.getColorAt(1,1)).thenReturn("B");
+    String result = captureConsoleString(app::print);
 
-        app.move();
+    assertEquals(expectedResult, result);
+  }
 
-        verify(ant).moveRight();
-    }
-    @Test
-    void ant_turn_left_when_black_grid(){
-        App app = initApp(3);
-        app.start();
+  @Test
+  void ant_turn_right_when_blank_grid() {
+    when(grid.getColorAt(1, 1)).thenReturn("B");
 
-        when(grid.getColorAt(1,1)).thenReturn("N");
-
-        app.move();
-
-        verify(ant).moveLeft();
-    }
+    App app = initApp(3);
+    app.start();
 
 
-    private String captureConsoleString(Runnable runnable) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream((baos));
+    app.move();
 
-        PrintStream old = System.out;
-        System.setOut(ps);
+    verify(ant).moveRight();
+  }
 
-        runnable.run();
+  @Test
+  void ant_turn_left_when_black_grid() {
+    when(grid.getColorAt(1, 1)).thenReturn("N");
 
-        System.setOut(old);
+    App app = initApp(3);
+    app.start();
 
-        return baos.toString();
-    }
+
+    app.move();
+
+    verify(ant).moveLeft();
+  }
+
+  @Test
+  void ant_shouldBe_initialized_in_the_middle_of_the_grid() {
+    int gridDimension = 3;
+    Function<Integer, Ant> mockAntFunction = mock(Function.class);
+
+    new App(dimensionChecker, gridDimension, mockAntFunction, gridFunction);
+
+    int middleGridPosition = gridDimension / 2;
+    verify(mockAntFunction).apply(middleGridPosition);
+  }
+
+
+  private String captureConsoleString(Runnable runnable) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream((baos));
+
+    PrintStream old = System.out;
+    System.setOut(ps);
+
+    runnable.run();
+
+    System.setOut(old);
+
+    return baos.toString();
+  }
 
 }
