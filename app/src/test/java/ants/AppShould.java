@@ -15,10 +15,10 @@ class AppShould {
 
 
   private Ant ant;
-  private Function<Integer, Ant> antFunction;
+  private Function<Position, Ant> antFunction;
 
   private Grid grid;
-  private Function<Integer, Grid> gridFunction;
+  private Function<Dimension, Grid> gridFunction;
 
   private Printer printer;
   private Supplier<Printer> printerFunction;
@@ -48,7 +48,7 @@ class AppShould {
 
 
   private App initApp(int gridDimension) {
-    var app = new App(gridDimension, antFunction, gridFunction, printerFunction);
+    var app = new App(Dimension.of(gridDimension), antFunction, gridFunction, printerFunction);
     return app;
   }
 
@@ -79,12 +79,12 @@ class AppShould {
 
   @Test
   void ant_shouldBe_initialized_in_the_middle_of_the_grid() {
-    int gridDimension = 3;
-    Function<Integer, Ant> mockAntFunction = mock(Function.class);
+    Dimension gridDimension = Dimension.of(3);
+    Function<Position, Ant> mockAntFunction = mock(Function.class);
 
     new App(gridDimension, mockAntFunction, gridFunction, printerFunction);
 
-    int middleGridPosition = gridDimension / 2;
+    Position middleGridPosition = Position.of(gridDimension.value() / 2);
     verify(mockAntFunction).apply(middleGridPosition);
   }
 

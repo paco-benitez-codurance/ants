@@ -5,18 +5,16 @@ import java.util.function.Supplier;
 
 public class App {
 
-  private final int dimension;
   private final Printer printer;
   private final Ant ant;
   private final Grid grid;
 
-  App(int dimension,
-      Function<Integer, Ant> antFunction,
-      Function<Integer, Grid> gridFunction,
+  App(Dimension dimension,
+      Function<Position, Ant> antFunction,
+      Function<Dimension, Grid> gridFunction,
       Supplier<Printer> printerFunction) {
-    this.dimension = dimension;
     this.printer = printerFunction.get();
-    this.ant = antFunction.apply(dimension / 2);
+    this.ant = antFunction.apply(Position.of(dimension.value() / 2));
     this.grid = gridFunction.apply(dimension);
   }
 

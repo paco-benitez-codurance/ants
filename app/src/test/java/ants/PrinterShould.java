@@ -46,7 +46,7 @@ class PrinterShould {
   @Test
   void print_grid_with_an_ant_in_the_middle() {
     Grid grid = new Grid(3);
-    Ant ant = new Ant(1);
+    Ant ant = new Ant(Position.of(1));
 
     String result = captureConsoleString(() -> printer.print(grid, ant));
 
